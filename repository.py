@@ -90,22 +90,3 @@ def db_get_embed(sql, pk) -> list:
         db_cursor = conn.cursor()
         db_cursor.execute(sql, (pk,))
         return db_cursor.fetchall()
-
-# def embed_haulers(docks, row):
-#     dock_id = row["id"]
-#     hauler = {
-#         "id": row["haulerId"],
-#         "name": row["name"],
-#         "dock": row["dock_id"],
-#     }
-#     if dock_id in docks:
-#         docks[dock_id]["haulers"].append(hauler)
-#     else:
-#         dock ={
-#             "id": row["haulerId"],
-#             "location": row["location"],
-#             "capacity": row["capacity"],
-#             "haulers": [hauler]
-#         }
-#         docks[dock_id] = dock
-#     return docks

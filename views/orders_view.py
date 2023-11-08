@@ -7,18 +7,11 @@ from repository import db_get_single, db_get_all, db_create, db_delete
 class OrdersView:
     def get(self, handler, url):
         sql = """SELECT o.id, o.metal_id, o.style_id, o.size_id FROM `Order` o"""
-        
         if url["pk"] != 0:
             sql += " WHERE o.id = ?"
             query_results = db_get_single(sql, url["pk"])
             diction_order = dict(query_results)
-            serialized_order = json.dumps(diction_order)
-            return handler.response(serialized_order, status.HTTP_200_SUCCESS.value)
-        
-        if "_expand" in url["query_params"]:
-            query_results = db_get_single(sql, url["pk"])
-            diction_order = dict(query_results)
-            if "metal" in url["query_params"]["_expand"]:
+            if "_expand" in url["query_params"] and "metal" in url["query_params"]["_expand"]:
                 metal_fk = diction_order["metal_id"]
                 metal_sql = """SELECT m.id, m.metal, m.price FROM Metal m WHERE m.id = ?"""
                 metal_info = db_get_single(metal_sql, metal_fk)
@@ -27,8 +20,8 @@ class OrdersView:
                     "metal": metal_info["metal"],
                     "price": metal_info["price"]
                 }
-            diction_order["metal"] = metal_object
-            if "style" in url["query_params"]["_expand"]:
+                diction_order["metal"] = metal_object
+            if "_expand" in url["query_params"] and "style" in url["query_params"]["_expand"]:
                 style_fk = diction_order["style_id"]
                 style_sql = """SELECT s.id, s.style, s.price FROM Style s WHERE s.id = ?"""
                 style_info = db_get_single(style_sql, style_fk)
@@ -38,7 +31,7 @@ class OrdersView:
                     "price": style_info["price"]
                 }
                 diction_order["style"] = style_object
-            if "size" in url["query_params"]["_expand"]:
+            if "_expand" in url["query_params"] and "size" in url["query_params"]["_expand"]:
                 size_fk = diction_order["size_id"]
                 size_sql = """SELECT s.id, s.caret, s.price FROM Size s WHERE s.id = ?"""
                 size_info = db_get_single(size_sql, size_fk)
